@@ -29,6 +29,7 @@ functions:
                 - FAILED
                 - STOPPED
                 - SUCCEEDED
+                - IN_PROGRESS
 
 
 resources:

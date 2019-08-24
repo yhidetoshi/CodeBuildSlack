@@ -2,6 +2,13 @@
 
 AWS CodeBuildの実行結果をLambdaを使ってSlackに通知する
 
+## デプロイ方法
+
+```bash
+$ make setup cross-build
+$ sls deploy --aws-profile <PROFILE> --slackurl <WEBHOOK_URL>
+```
+
 ## アーキテクチャ
 
 ![アーキテクチャ](./img/CodeBuildSlack.png)
