@@ -1,0 +1,60 @@
+service: slack-notice
+frameworkVersion: ">=1.48.0"
+
+provider:
+  name: aws
+  runtime: go1.x
+  stage: dev
+  region: ap-northeast-1
+
+
+functions:
+  codebuild:
+    handler: main
+    role: codebuildSlack
+    timeout: 30
+    description: codebuild status slack
+    memorySize: 128
+    environment:
+      SLACKURL: ${opt:slackurl}
+    events:
+      - cloudwatchEvent:
+          event:
+            source:
+              - 'aws.codebuild'
+            detail-type:
+              - 'CodeBuild Build State Change'
+            detail:
+              build-status:
+                - FAILED
+                - STOPPED
+                - SUCCEEDED
+
+
+resources:
+  Resources:
+    codebuildSlack:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: codebuildSlack
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+        ManagedPolicyArns:
+          - arn:aws:iam::aws:policy/ReadOnlyAccess
+        Policies:
+          - PolicyName: codebuildSlackLogs
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - "logs:CreateLogGroup"
+                    - "logs:CreateLogStream"
+                    - "logs:PutLogEvents"
+                  Resource: "*"
