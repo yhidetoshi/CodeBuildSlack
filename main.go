@@ -10,14 +10,23 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
+const version = "0.0.1"
+
 var (
+	// CHANNEL slack channel name
 	CHANNEL  = "dev"
+
+	// USERNAME slack username
 	USERNAME = "CodeBuild"
+
+	// SLACKURL slack webhook
 	SLACKURL = os.Getenv("SLACKURL")
 )
 
+// CodeBuildPhaseStatus set status
 type CodeBuildPhaseStatus string
 
+// CodeBuildEventDetail set event detail
 type CodeBuildEventDetail struct {
 	BuildStatus CodeBuildPhaseStatus `json:"build-status"`
 	ProjectName string               `json:"project-name"`
@@ -27,6 +36,7 @@ func main() {
 	lambda.Start(Handler)
 }
 
+// Handler Lambda
 func Handler(event events.CloudWatchEvent) {
 	resInfo := &CodeBuildEventDetail{}
 
@@ -51,6 +61,7 @@ func checkStatus(status string) string {
 	return color
 }
 
+// PostSlack post slack result
 func PostSlack(pjtName string, status string) {
 
 	statusColor := checkStatus(status)
